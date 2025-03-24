@@ -9,12 +9,12 @@ const App = () => {
   const addStopwatch = () => {
     setStopwatches((prev) => [
       ...prev,
-      { id: Date.now(), time: 0, isRunning: false },
+      Date.now()
     ]);
   };
 
   const deleteStopwatch = (id) => {
-    setStopwatches((prev) => prev.filter((sw) => sw.id !== id));
+    setStopwatches((prev) => prev.filter((sw) => sw !== id));
   };
 
   return (
@@ -28,9 +28,8 @@ const App = () => {
       <div className="stopwatch-list">
         {stopwatches.map((stopwatch) => (
           <Stopwatch
-            key={stopwatch.id}
+            key={stopwatch}
             stopwatch={stopwatch}
-            setStopwatches={setStopwatches}
             deleteStopwatch={deleteStopwatch}
           />
         ))}

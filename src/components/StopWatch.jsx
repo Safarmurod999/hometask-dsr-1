@@ -1,44 +1,35 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const Stopwatch = ({
   stopwatch,
-  setStopwatches,
   deleteStopwatch,
 }) => {
-  const [time, setTime] = useState(stopwatch.time);
-  const [isRunning, setIsRunning] = useState(stopwatch.isRunning);
-
-  useEffect(() => {
-    let intervalId;
-    if (isRunning) {
-      intervalId = setInterval(() => {
-        setTime((prev) => prev + 1);
-      }, 1000);
-    }
-    return () => clearInterval(intervalId);
-  }, [isRunning]);
-
-  useEffect(() => {
-    setStopwatches((prev) =>
-      prev.map((item) =>
-        item.id === item.id ? { ...item, time, isRunning } : item
-      )
-    );
-  }, [time, isRunning, stopwatch.id, setStopwatches]);
+  const [time, setTime] = useState(0);
+  const [isRunning, setIsRunning] = useState(false);
+  const intervalRef = useRef(null);
 
   const handleStart = () => {
     setIsRunning(true);
+
+    intervalRef.current = setInterval(() => {
+      setTime((prev) => prev + 1);
+    }, 1000);
   };
 
   const handlePause = () => {
     setIsRunning(false);
+    clearInterval(intervalRef.current);
   };
 
   const handleClear = () => {
-    setTime(0);
     setIsRunning(false);
+    clearInterval(intervalRef.current);
+    setTime(0);
   };
-
+  const handleDelete = () => {
+    clearInterval(intervalRef.current);
+    deleteStopwatch(stopwatch);
+  }
   const formatTime = (seconds) => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
@@ -94,7 +85,7 @@ const Stopwatch = ({
       <button
         className="stopwatch-button"
 
-        onClick={() => deleteStopwatch(stopwatch.id)}
+        onClick={handleDelete}
       >
         Delete
       </button>
